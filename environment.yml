@@ -1,0 +1,20 @@
+name: football_lab
+channels:
+  - defaults
+  - conda-forge
+  - plotly
+dependencies:
+  - python=3.11
+  - pandas
+  - numpy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - scipy
+  - statsmodels
+  - notebook
+  - jupyterlab
+  - plotly
+  - pip
+  - pip:
+      - shap
