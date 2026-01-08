@@ -23,12 +23,12 @@ venv.bak/
 # VS Code
 .vscode/
 
-# Data (optional - we may refine later)
+# Data 
 *.csv
 *.xlsx
 *.parquet
 data/raw/
 data/processed/
 
-# Models (optional - will adjust later)
+# Models 
 models/
