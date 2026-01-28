@@ -1,8 +1,11 @@
 # Player Performance Prediction
 
-This module focuses on predicting whether a football player will deliver a **good performance** in an upcoming match, using a **hybrid definition** that combines match ratings and statistical performance metrics.
+This module focuses on predicting whether a football player will deliver a **good performance** in an upcoming match, using season-level performance statistics as a proxy for player form and quality.
 
 It is designed as an explainable machine learning project.
+
+Models are trained and evaluated using the statistics-based proxy performance label derived from the composite performance_score.
+
 
 ---
 
@@ -10,31 +13,24 @@ It is designed as an explainable machine learning project.
 
 ### Core Objective
 
-- Predict if a player will have a **"good performance" in the next match**.
+- Predict whether a player is likely to deliver a good performance in an upcoming match, based on learned patterns from historical season-level statistics.
 
-### Hybrid Label Definition
+### Performance Label Definition
 
-We will define "good performance" in two complementary ways:
+In the current version of the project, "good performance" is defined using a statistics-based proxy label.
 
-1. **Rating-based label**
-   - Use a match rating from a provider (probably flashscore).
-   - Define a good performance as:  
-     \- Rating ≥ a chosen threshold 
-   - This creates a **binary classification** label:  
-     \- `good_performance_rating = 1` if rating ≥ threshold, else `0`.
+Use a statistics-based proxy label built from a composite performance_score derived from multiple performance dimensions, including:
+- attacking contribution
+- defensive contribution
+- possession involvement
+- discipline
+- minutes played
 
-2. **Stats-based label**
-   - Use performance metrics (xG, xA, shots, key passes, defensive actions, saves).
-   - Build a composite or simple metric such as:
-     - `offensive_contribution = xG + xA`
-     - or a weighted index of several stats.
-   - Define "good" as being above a certain percentile or threshold.
-   - This creates a second binary label:  
-     \- `good_performance_stats = 1` if above threshold, else `0`.
+The performance_score is computed using position-specific weights to account for different player roles.
+- A player is labeled as "good performance" if their performance_score is above a defined percentile threshold, resulting in a binary classification label.
 
-We will build and compare models using:
-- **rating-based labels**
-- **stats-based labels**
+Because match-by-match performance labels are not available in the current dataset, season-level composite performance is used as a proxy target to learn patterns associated with strong player performance, as a first step toward future match-level prediction.
+
 
 ### Advanced Objective (Extension – Injury Risk)
 
@@ -57,7 +53,7 @@ This extension will be implemented only if suitable data can be collected and wi
    - Identify and download a real dataset with:
      - player-level match stats by game
      - per-90 or per-match statistics
-     - match ratings if available
+     - match ratings if available (future extension)
    - Document the season(s), competition(s), and data source clearly in the module README and in `docs/`.
 
 2. **Data Cleaning & Preparation**
@@ -68,16 +64,16 @@ This extension will be implemented only if suitable data can be collected and wi
 
 3. **Feature Engineering**
    - Construct meaningful features such as:
-     - rolling averages of key stats over last N matches
-     - home vs away
-     - opponent strength indicators
-     - rest days between matches
-     - position-specific features 
+     - per-90 and aggregated season-level statistics
+     - position-specific performance indicators
+     - composite performance metrics
+ 
 
-4. **Label Construction (Hybrid)**
-   - Implement the rating-based label (good vs not good).
-   - Implement the stats-based label (good vs not good).
-   - Explore distributions and verify that the class balance is reasonable.
+4. **Label Construction (Current & Future)**
+  - Construct a statistics-based proxy label using the composite performance_score.
+  - Explore the distribution of the label and verify class balance.
+  - (Future extension) Integrate rating-based labels from external providers such as Flashscore to enable true match-level performance prediction.
+
 
 5. **Modeling**
    - Split data into train/validation/test sets.
@@ -87,9 +83,9 @@ This extension will be implemented only if suitable data can be collected and wi
    - Train more advanced models:
      - Random Forest
      - Gradient Boosting 
-   - Compare performance between:
-     - rating-based label model
-     - stats-based label model
+   - Evaluate model performance using the statistics-based proxy label.
+   - (Future extension) Compare performance against rating-based labels once such data is integrated.
+
 
 6. **Evaluation**
    - Use appropriate metrics:
@@ -105,14 +101,15 @@ This extension will be implemented only if suitable data can be collected and wi
    - Use feature importance or SHAP (if feasible) to explain:
      - which features contribute most to predictions
    - Provide football-context interpretation:
-     - how recent form, opponent strength, or rest days affect predicted performance.
+     - how different statistical performance dimensions and player roles influence predicted performance.
+
 
 8. **(Optional) Injury Risk Extension**
    - If an injury dataset is obtained:
      - define an injury label which means missing matches due to injury in upcoming period
      - engineer workload features
      - build and evaluate a simple classifier
-   - Clearly document limitations and assumptions.
+     - Clearly document limitations and assumptions.
 
 ---
 

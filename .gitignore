@@ -1,0 +1,48 @@
+# ======================
+# Global ignores
+# ======================
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environments
+.env
+.venv
+conda-env/
+env/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+# ======================
+# Data (ALL modules)
+# ======================
+**/data/raw/
+**/data/processed/
+*.csv
+*.xlsx
+
+
+# ======================
+# Models / artifacts
+# ======================
+*.pkl
+*.joblib
+
+
+# ======================
+# Module-specific
+# ======================
+
+# Player similarity
+player-similarity/data/
+player-similarity/models/
