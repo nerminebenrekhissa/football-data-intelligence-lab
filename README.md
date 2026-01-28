@@ -22,8 +22,8 @@ Apply supervised learning models to player-level football statistics to classify
 This module includes data preprocessing, feature engineering, normalization, and baseline machine learning models trained on real Top-5 league data.
 
 ### 2. Player Similarity & Scouting Assistant
-Design a player similarity analysis pipeline using engineered features, dimensionality reduction (PCA), and cosine similarity to identify players with similar statistical profiles.  
-This module is intended to support exploratory scouting-style analysis. *(in progress / planned)*
+Design and implement a player similarity analysis pipeline using engineered features, dimensionality reduction (PCA), and cosine similarity to identify players with similar statistical profiles.  
+This module supports exploratory scouting-style analysis by enabling similarity search based on playing style rather than reputation or age.
 
 ### 3. Match Outcome Prediction
 Explore match outcome prediction (Win / Draw / Loss) using team-level statistics, rolling averages, and recent form indicators derived from historical match data. *(planned)*
@@ -40,17 +40,19 @@ All preprocessing and feature engineering steps are documented through reproduci
 ## Completed So Far
 
 - Data collection and preprocessing (Top-5 European leagues)
-- Baseline supervised machine learning models for player performance prediction
 - Dataset merging from multiple sources into a unified player-level table
 - Feature engineering and normalization
-- Design and implementation of a multi-factor player performance score
+- Design and implementation of a composite player performance score
+- Baseline supervised machine learning models for player performance prediction
+- Player similarity pipeline using PCA and cosine similarity
+
 
 ---
 
 ## Currently In Progress / Planned
 
-- Final model training and evaluation on the engineered performance dataset
-- Player similarity analysis using PCA and cosine similarity
+- Deeper analysis and interpretation of model results
+- Extension of player similarity with clustering and visualization
 - Match outcome prediction using team-level statistics
 - Optional Streamlit interface for interactive exploration
 
