@@ -53,8 +53,9 @@ def predict_player(player_name: str, top_k=5):
     print("\nPlayer:", row["Player"])
     print("Team:", row.get("Squad", "N/A"))
     print("Position:", row.get("Pos", "N/A"))
-    print(f"Predicted good performance (proxy): {pred}")
-    print(f"Probability (class 1): {proba:.3f}")
+    print(f"Predicted performance tier (good_perf): {pred}")
+    print(f"Confidence (P(good_perf=1)): {proba:.3f}")
+
 
 
 if __name__ == "__main__":

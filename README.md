@@ -1,3 +1,4 @@
+
 # Football Data Intelligence Lab
 
 **Football Data Intelligence Lab** is an ongoing exploratory project focused on applying data analysis and machine learning concepts to real-world football datasets.
@@ -5,6 +6,16 @@
 The project is designed as a modular “lab” environment to experiment with sports analytics methodologies commonly used in professional football analytics and data science research.
 
 ---
+
+## Quickstart
+
+```bash
+conda env create -f environment.yml
+conda activate football_lab
+python player-similarity/src/predict_similarity.py
+python player-performance/src/predict.py
+```
+
 
 ## Project Overview
 
