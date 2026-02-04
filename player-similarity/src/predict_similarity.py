@@ -1,13 +1,20 @@
 import numpy as np
 import pandas as pd
 import joblib
+import sys
+import os
 from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import cosine_similarity
 
-BASE_DIR = Path(__file__).resolve().parent.parent  
-ROOT_DIR = BASE_DIR.parent 
+BASE_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = BASE_DIR.parent
+
+COMMON_SRC = ROOT_DIR / "common" / "src"
+sys.path.append(str(COMMON_SRC))
+
+from player_id import resolve_player, pick_candidate_interactive
 
 DATA_PATH = ROOT_DIR / "player-performance" / "data" / "processed" / "players_full_2425_with_score.csv"
 
@@ -18,7 +25,6 @@ SCALER_PATH = ARTIFACTS_DIR / "similarity_scaler.pkl"
 PCA_PATH = ARTIFACTS_DIR / "similarity_pca.pkl"
 FEATURES_PATH = ARTIFACTS_DIR / "similarity_features.pkl"
 META_PATH = ARTIFACTS_DIR / "similarity_metadata.pkl"
-
 
 SIM_FEATURES = [
     "Age", "90s",
@@ -80,14 +86,23 @@ def build_embeddings(min_90s=5):
 def find_similar(player_name, top_n=10, same_position=True, min_90s=5):
     df_sim, X_pca = build_embeddings(min_90s=min_90s)
 
-    # find player
-    exact = df_sim["Player"].astype(str).str.lower() == player_name.lower()
-    if not exact.any():
+    row, candidates = resolve_player(df_sim, player_name, allow_partial=True)
+
+    # Case 1: ambiguous -> user chooses
+    if len(candidates) > 0:
+        chosen_idx = pick_candidate_interactive(candidates)
+        if chosen_idx is None:
+            return None, "Cancelled."
+        row = df_sim.loc[chosen_idx].copy()
+
+    # Case 2: not found
+    if row.empty:
         contains = df_sim["Player"].astype(str).str.lower().str.contains(player_name.lower(), na=False)
         matches = df_sim[contains][["Player", "Squad", "Pos"]].head(10)
         return None, "Player not found. Closest matches:\n" + matches.to_string(index=False)
 
-    idx_label = df_sim.index[exact][0]
+    # Case 3: resolved
+    idx_label = row.name
     idx = df_sim.index.get_loc(idx_label)
 
     player_pos = df_sim.iloc[idx]["Pos"]
