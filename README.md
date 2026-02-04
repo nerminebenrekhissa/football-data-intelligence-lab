@@ -18,7 +18,7 @@ This project explores how machine learning and statistical analysis can be used 
 The repository is structured around three main modules:
 
 ### 1. Player Performance Prediction
-Apply supervised learning models to player-level football statistics to classify players as high-performing versus others.  
+Apply supervised learning models to player-level football statistics to predict player performance using season-level data as a proxy for form and quality.  
 This module includes data preprocessing, feature engineering, normalization, and baseline machine learning models trained on real Top-5 league data.
 
 ### 2. Player Similarity & Scouting Assistant
