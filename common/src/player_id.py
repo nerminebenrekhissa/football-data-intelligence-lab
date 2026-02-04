@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Optional, List, Tuple
+import unicodedata
+import re
 import pandas as pd
 
 
@@ -15,8 +17,21 @@ class PlayerCandidate:
     Age: Optional[float] = None
 
 
-def _norm(x: Optional[str]) -> str:
-    return (x or "").strip().lower()
+def _norm(s: Optional[str]) -> str:
+    """
+    Normalize strings for robust matching:
+    - lowercase
+    - trim
+    - remove accents (Araújo -> araujo)
+    - collapse multiple spaces
+    """
+    s = (s or "").lower().strip()
+    s = "".join(
+        ch for ch in unicodedata.normalize("NFKD", s)
+        if not unicodedata.combining(ch)
+    )
+    s = re.sub(r"\s+", " ", s)
+    return s
 
 
 def build_player_uid(row: pd.Series) -> str:
@@ -42,33 +57,36 @@ def resolve_player(
         raise ValueError("DataFrame must contain a 'Player' column.")
 
     p = _norm(player)
-    name_series = df["Player"].astype(str)
+    name_series = df["Player"].astype(str).map(_norm)
 
-    exact_mask = name_series.str.strip().str.lower().eq(p)
+    # Exact match first
+    exact_mask = name_series.eq(p)
     matches = df[exact_mask].copy()
 
+    # Then partial match if allowed
     if matches.empty and allow_partial:
-        contains_mask = name_series.str.strip().str.lower().str.contains(p, na=False)
+        contains_mask = name_series.str.contains(p, na=False)
         matches = df[contains_mask].copy()
 
+    # Optional filters (also normalized)
     if squad and "Squad" in matches.columns:
         s = _norm(squad)
-        matches = matches[matches["Squad"].astype(str).str.strip().str.lower().eq(s)]
+        matches = matches[matches["Squad"].astype(str).map(_norm).eq(s)]
 
     if comp and "Comp" in matches.columns:
         c = _norm(comp)
-        matches = matches[matches["Comp"].astype(str).str.strip().str.lower().eq(c)]
+        matches = matches[matches["Comp"].astype(str).map(_norm).eq(c)]
 
     if pos and "Pos" in matches.columns:
         po = _norm(pos)
-        matches = matches[matches["Pos"].astype(str).str.strip().str.lower().eq(po)]
+        matches = matches[matches["Pos"].astype(str).map(_norm).eq(po)]
 
     if len(matches) == 1:
         row = matches.iloc[0].copy()
         row["player_uid"] = build_player_uid(row)
         return row, []
 
-    # build candidates list 
+    # Build candidates list (ambiguous or not found -> possibly empty list)
     candidates: List[PlayerCandidate] = []
     for _, r in matches.reset_index(drop=False).iterrows():
         candidates.append(
